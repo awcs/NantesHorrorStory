@@ -131,19 +131,23 @@ window.onload = () => {
       if (audio.play()) {
         audio.pause()
       }
-      document.getElementById("canvas").className = "d-block";
+      document.getElementById("canvas").className ="d-block";
     });
 
     let restartGameHandler = document.getElementById("restartGame")
 
     restartGameHandler.addEventListener('click', function(){
-      document.getElementById("gameoverScreen").innerHTML = "";
+      document.getElementById("gameoverScreen").className = "d-none";
+      document.getElementById("healthBar").style.width = `100%`;
+      document.getElementById("candiesBar").style.width = `0%`;
     })
 
     let restartGameWonHandler = document.getElementById("restartGameWon")
 
     restartGameWonHandler.addEventListener('click', function(){
-      document.getElementById("wonScreen").innerHTML = "";
+      document.getElementById("wonScreen").className = "d-none";
+      document.getElementById("healthBar").style.width = `100%`;
+      document.getElementById("candiesBar").style.width = `0%`;
     })
 }
   

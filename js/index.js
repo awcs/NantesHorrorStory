@@ -203,7 +203,7 @@ launchCanvas = () => {
     map.setCollisionBetween(735,736);
     map.setCollisionBetween(737,767);
 
-    // GENERATE HOUSES
+  //  GENERATE HOUSES
     housesGroupe = game.add.group();
     houses.map(house => {
       let houseTemp = game.add.sprite(house.x, house.y, 'house');
@@ -251,17 +251,16 @@ launchCanvas = () => {
   }
     function collisionChubbyHandler() {
       if(chubby.recovery < Date.now()){
-        lifeBar -= 33;
+        chubby.life -= 33;
         chubby.recovery = Date.now() + 1000
-        document.getElementById("healthBar").style.width = `${lifeBar}%`;
+        document.getElementById("healthBar").style.width = `${chubby.life}%`;
         chubbyScream.play();
         zombieBite.play();
       }
-      if (lifeBar < 1) {
+      if (chubby.life < 1) {
         game.destroy();
         document.getElementById("gameoverScreen").className="d-block";
         document.getElementById("canvas").innerHTML="";
-        
       }
     }
 
