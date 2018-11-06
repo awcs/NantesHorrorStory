@@ -1,4 +1,5 @@
 launchCanvas = () => {
+
   let game = new Phaser.Game(1024, 768, Phaser.AUTO, 'canvas', { preload: preload, create: create, update: update, render: render });
   let upKey;
   let downKey;
@@ -8,10 +9,6 @@ launchCanvas = () => {
   let map;
   let layer;
   let emitterParticle;
-  let lifeBar = 100;
-  let candies = [];
-  let bonbondex = [];
-  let streets = [];
   let candiesSound;
   let chubbyScream;
 
@@ -33,42 +30,10 @@ launchCanvas = () => {
     {address: '', x: 832, y:96},
     {address: '', x: 960, y:576},]
 
-    window.onload = () => {
-      let dataCandy = [];
-      let dataStreet = [];
-
-      fetch(`https://fr-en.openfoodfacts.org/category/candies/${getRandomArbitrary(1,50)}.json`)
-      .then(response=> response.json())
-      .then( json => {dataCandy = json.products})
-      .then( () =>{ dataCandy.map(candy => {
-        return(
-          candies.push(candy.product_name)
-        )})
-        console.log(candies)
-      })
-      
-      fetch("https://api-adresse.data.gouv.fr/search/?q=rue&type=street&limit=14&citycode=44109")
-      .then(response => response.json())
-      .then( json => {
-        dataStreet = json.features
-      })
-      .then(() => {dataStreet.map(street => {
-        return(
-          streets.push(street.properties.name)
-        )})
-        console.log(streets)
-      })
-    }
-
-    getRandomInt = (max) => {
-      return Math.floor(Math.random() * Math.floor(max)); 
-    }
-    
-    getRandomArbitrary = (min, max) => {
-      return Math.floor(Math.random() * (max - min) + min);
-    }
-
   function preload() {
+
+    // LOAD SPRITE + MAP 
+
     game.load.tilemap('map-csv', './assets/image/map.csv', null, Phaser.Tilemap.CSV);
     game.load.image('map', './assets/image/map.jpg');
     game.load.spritesheet('chubby', './assets/image/chubbyboy-run.png', 26, 26, 4);
@@ -77,6 +42,8 @@ launchCanvas = () => {
     game.load.spritesheet('zombi1', 'assets/image/zombi2-sprite.png', 26, 26, 4);
     game.load.spritesheet('zombi3', 'assets/image/zombi3-sprite.png', 26, 26, 4);
 
+    // LOAD SOUND
+
     candiesSound = new Audio('./assets/sound/candiesBlowup.mp3');
     chubbyScream = new Audio('./assets/sound/scream-sound.mp3');
     zombieBite = new Audio('./assets/sound/Zombie.mp3');
@@ -84,6 +51,9 @@ launchCanvas = () => {
   }
 
   function create() {
+
+    // GENERATE MAP
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     map = game.add.tilemap('map-csv', 32, 32);
@@ -92,6 +62,9 @@ launchCanvas = () => {
     
     layer = map.createLayer(0);
     layer.resizeWorld();
+
+    // TILES COLLISION DETECTION
+
     map.setCollisionBetween(0,32);
     map.setCollisionBetween(63,64);
     map.setCollisionBetween(66,73);
@@ -229,12 +202,14 @@ launchCanvas = () => {
       s.animations.play('walk', 10, true);
     }
 
-    layer.debug = false;
+    // MOVES
 
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+
+    // GENERATE PLAYER 
 
     chubby = game.add.sprite(game.width/2, game.height/2, 'chubby', 0);
     game.physics.enable(chubby, Phaser.Physics.ARCADE);
@@ -249,6 +224,9 @@ launchCanvas = () => {
 
     anim.play(10, true);
   }
+
+  // COLLID ZOMBIE + DAMAGE
+
     function collisionChubbyHandler() {
       if(chubby.recovery < Date.now()){
         chubby.life -= 33;
@@ -263,6 +241,8 @@ launchCanvas = () => {
         document.getElementById("canvas").innerHTML="";
       }
     }
+
+    // COLLID HOUSE + CANDY ANIMATION
 
     function collisionHouseHandler (ob1, obj2) {
       if(!chubby.lastHouseDelay[obj2.renderOrderID]) {
@@ -286,20 +266,24 @@ launchCanvas = () => {
       }
     }
 
+    function destroyEmitter() {
+      if(emitterParticle.exists){
+      emitterParticle.destroy();
+      }
+    }
+
     function getCandyFromApi() {
       chubby.candy += Math.floor((getRandomArbitrary(1,25))/2); 
-      console.log(chubby.candy)
-      if(chubby.candy > 100){
+      if(chubby.candy > 500){
         game.destroy();
         document.getElementById("wonScreen").className="d-block";
         document.getElementById("canvas").innerHTML="";
       }
       document.getElementById("candiesBar").style.width=`${chubby.candy}%`
-      for(let i =0; i< candies.length ; i += 2) {
-        bonbondex.push(candies[i]);
-      }
     }
     
+    // COLLID GENERATE ZOMBIE
+
     function zombiePop() {
       let s = zombi1.create(game.world.randomX, game.world.randomY, 'zombi3');
       let walk = s.animations.add('walk');
@@ -310,21 +294,15 @@ launchCanvas = () => {
       s.animations.play('walk', 10, true);
     }
 
-    function destroyEmitter() {
-      if(emitterParticle.exists){
-      emitterParticle.destroy();
-      }
-    }
-
-
   function update() {
+
+    // COLLISION HANDLER
+
     game.physics.arcade.collide(chubby, layer);
     game.physics.arcade.collide(layer, zombi1);
     game.physics.arcade.collide(housesGroupe, zombi1);
-
     game.physics.arcade.collide(housesGroupe, chubby, collisionHouseHandler, null, this);
     game.physics.arcade.collide(chubby, zombi1, collisionChubbyHandler, null, this);
-
     chubby.body.velocity.set(0);
 
     // CHECK HOUSE REOPEN
@@ -339,6 +317,8 @@ launchCanvas = () => {
         }
       }
     }
+
+    // MOVES VELOCITY
 
     if (leftKey.isDown) {
       chubby.body.velocity.x = -100;

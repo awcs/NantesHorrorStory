@@ -103,6 +103,8 @@ window.onload = () => {
     </div>`
   
     
+    // STARTSCREEN
+
     document.getElementById("screen").innerHTML = startScreen;
     let audio = new Audio('./assets/sound/Undead.mp3');
     let audioGame = new Audio('./assets/sound/GameMusic.mp3')
@@ -122,6 +124,8 @@ window.onload = () => {
       }
     });
 
+    // START GAME
+
     let startGameHandler = document.getElementById("startGame")
 
     startGameHandler.addEventListener('click', function(){
@@ -134,6 +138,8 @@ window.onload = () => {
       document.getElementById("canvas").className ="d-block";
     });
 
+    // TRY AGAIN 
+
     let restartGameHandler = document.getElementById("restartGame")
 
     restartGameHandler.addEventListener('click', function(){
@@ -142,6 +148,8 @@ window.onload = () => {
       document.getElementById("candiesBar").style.width = `0%`;
     })
 
+    // WON SCREEN
+    
     let restartGameWonHandler = document.getElementById("restartGameWon")
 
     restartGameWonHandler.addEventListener('click', function(){
